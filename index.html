@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MCP Hub — AI 확장 서버 디렉토리</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0a0a0f;
+  --surface:  #111118;
+  --card:     #16161f;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.13);
+  --text:     #e8e8f0;
+  --muted:    #6b6b80;
+  --accent:   #7b61ff;
+  --accent2:  #00d4aa;
+  --mono:     'DM Mono', monospace;
+  --sans:     'Syne', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── 배경 그리드 ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(123,97,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(123,97,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 헤더 ── */
+header {
+  position: relative;
+  z-index: 10;
+  padding: 3rem 2rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.logo-mark {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.logo-text h1 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+.logo-text p {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--mono);
+  margin-top: 2px;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.meta-badge {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+}
+
+.updated-tag {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.updated-tag::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent2);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+
+/* ── 메인 ── */
+main {
+  position: relative;
+  z-index: 10;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ── 통계 바 ── */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 2rem;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  transition: border-color .2s;
+}
+.stat-card:hover { border-color: var(--border2); }
+.stat-num {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--text), var(--muted));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.stat-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ── 컨트롤 ── */
+.controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+.search-wrap {
+  flex: 1;
+  min-width: 240px;
+  position: relative;
+}
+.search-wrap svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+#search {
+  width: 100%;
+  height: 44px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 14px 0 42px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s;
+}
+#search:focus { border-color: var(--accent); }
+#search::placeholder { color: var(--muted); }
+
+.sort-select {
+  height: 44px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 14px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.sort-select:hover { border-color: var(--border2); }
+
+/* ── 카테고리 필터 ── */
+.cat-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.cat-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 6px 13px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.cat-btn:hover { border-color: var(--border2); color: var(--text); }
+.cat-btn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ── 소스 필터 ── */
+.source-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 2rem;
+}
+.src-btn {
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+}
+.src-btn:hover { border-color: var(--border2); color: var(--text); }
+.src-btn.on { border-color: var(--accent2); color: var(--accent2); }
+
+/* ── 그리드 ── */
+#grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+/* ── 카드 ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color .2s, transform .15s;
+  animation: fadeUp .3s ease both;
+}
+.card:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+.card-cat {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.src-tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.src-tag.official { border-color: rgba(0,212,170,0.3); color: var(--accent2); }
+
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.stars {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.stars svg { color: #f5a623; }
+.arrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  transition: transform .15s;
+}
+.card:hover .arrow { transform: translateX(3px); }
+
+/* ── 빈 결과 ── */
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 14px;
+}
+.empty span {
+  display: block;
+  font-size: 40px;
+  margin-bottom: 1rem;
+}
+
+/* ── 업데이트 배너 ── */
+.update-banner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .8rem 1.25rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.diff-added   { color: var(--accent2); }
+.diff-removed { color: #ff6b6b; }
+
+/* ── 반응형 ── */
+@media (max-width: 768px) {
+  header { padding: 1.5rem 1rem 1rem; }
+  main   { padding: 1rem; }
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  #grid  { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">⚡</div>
+    <div class="logo-text">
+      <h1>MCP Hub</h1>
+      <p>AI 확장 서버 디렉토리 · 매일 09:00 자동 업데이트</p>
+    </div>
+  </div>
+  <div class="header-meta">
+    <span class="meta-badge" id="src-count">3 sources</span>
+    <span class="updated-tag" id="updated-tag">로딩 중...</span>
+  </div>
+</header>
+
+<main>
+  <!-- 통계 -->
+  <div class="stats-bar">
+    <div class="stat-card">
+      <div class="stat-num" id="s-total">—</div>
+      <div class="stat-label">전체 서버</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-shown">—</div>
+      <div class="stat-label">현재 표시</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-cats">—</div>
+      <div class="stat-label">카테고리</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-sources">3</div>
+      <div class="stat-label">수집 소스</div>
+    </div>
+  </div>
+
+  <!-- 업데이트 배너 -->
+  <div class="update-banner" id="banner" style="display:none"></div>
+
+  <!-- 검색 + 정렬 -->
+  <div class="controls">
+    <div class="search-wrap">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="search" placeholder="서버 이름, 기능, 카테고리 검색..." autocomplete="off">
+    </div>
+    <select class="sort-select" id="sort" onchange="render()">
+      <option value="stars">⭐ 스타 순</option>
+      <option value="name">🔤 이름 순</option>
+      <option value="source">📦 소스 순</option>
+    </select>
+  </div>
+
+  <!-- 카테고리 필터 -->
+  <div class="cat-row" id="cat-row"></div>
+
+  <!-- 소스 필터 -->
+  <div class="source-row" id="src-row"></div>
+
+  <!-- 카드 그리드 -->
+  <div id="grid"></div>
+</main>
+
+<script>
+const CAT_ICON = {
+  "개발/DevOps":        "🔧",
+  "데이터베이스":        "🗄️",
+  "브라우저 자동화":     "🎭",
+  "파일/시스템":         "📁",
+  "커뮤니케이션":        "💬",
+  "검색/웹":             "🌐",
+  "AI/데이터":           "🧠",
+  "생산성":              "✅",
+  "디자인/크리에이티브": "🎨",
+  "비즈니스":            "💼",
+  "모니터링/보안":       "🔐",
+  "기타":               "📦",
+};
+
+const SERVER_ICON = {
+  "GitHub":"🐙","Playwright":"🎭","Firecrawl":"🔥","PostgreSQL":"🐘",
+  "Filesystem":"📁","Slack":"💬","Brave Search":"🔍","SQLite":"🗄️",
+  "Memory":"🧠","Notion":"📝","Google Drive":"📂","Puppeteer":"🤖",
+  "Supabase":"⚡","Docker":"🐳","ElevenLabs":"🎙️","Asana":"✅",
+  "Salesforce":"☁️","Gmail":"📧","Atlassian Jira":"🔷","Figma":"🎨",
+  "Canva":"🖼️","Stripe":"💳","Linear":"📐","Fetch":"🌐",
+  "WhatsApp":"📱","Discord":"🎮","Markdownify":"✨","Alpha Vantage":"📈",
+  "Apify":"🕷️","Google Calendar":"📅","Sentry":"🚨","MongoDB":"🍃",
+  "Cloudflare":"☁️","Heroku":"🟣","HubSpot":"🧡","Pinecone":"🌲",
+  "Obsidian":"🪨","Shopify":"🛍️","Datadog":"🐶","Redis":"🔴",
+  "Anki":"🃏","AWS":"☁️","Stable Diffusion":"🖼️","Telegram":"✈️",
+  "Perplexity":"🔮","Sequential Thinking":"🔗","Git":"📌",
+  "Kaggle":"🏆","Everything":"🔮","Airtable":"📊",
+};
+
+let DATA  = [];
+let activeCat = null;
+let activeSrc = null;
+
+function fmtStars(n) {
+  if (n >= 1000) return (n/1000).toFixed(1).replace(/\.0$/,'') + 'k';
+  return String(n);
+}
+
+function fmtDate(iso) {
+  try {
+    return new Date(iso).toLocaleDateString('ko-KR', {month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  } catch { return iso; }
+}
+
+async function loadData() {
+  try {
+    const res  = await fetch('data/mcp_list.json?_=' + Date.now());
+    const json = await res.json();
+    DATA = json.items || [];
+
+    // 통계
+    const cats = [...new Set(DATA.map(d=>d.cat))];
+    document.getElementById('s-total').textContent  = DATA.length.toLocaleString();
+    document.getElementById('s-cats').textContent   = cats.length;
+    document.getElementById('updated-tag').textContent = '업데이트: ' + fmtDate(json.updated_at);
+
+    // 변경 배너
+    const prev = JSON.parse(localStorage.getItem('mcp_prev') || '[]');
+    const curNames = new Set(DATA.map(d=>d.name.toLowerCase()));
+    const prvNames = new Set(prev);
+    const added   = [...curNames].filter(n=>!prvNames.has(n));
+    const removed = [...prvNames].filter(n=>!curNames.has(n));
+    if (prev.length && (added.length || removed.length)) {
+      const banner = document.getElementById('banner');
+      banner.style.display = 'flex';
+      banner.innerHTML =
+        `<span>🔄 오늘 업데이트</span>` +
+        (added.length   ? `<span class="diff-added">+${added.length}개 신규</span>` : '') +
+        (removed.length ? `<span class="diff-removed">−${removed.length}개 제거</span>` : '') +
+        (added.length   ? `<span style="color:var(--muted)">· ${added.slice(0,3).join(', ')}${added.length>3?'...':''}</span>` : '');
+    }
+    localStorage.setItem('mcp_prev', JSON.stringify([...curNames]));
+
+    buildFilters(cats);
+    render();
+  } catch(e) {
+    document.getElementById('grid').innerHTML =
+      '<div class="empty"><span>⚠️</span>데이터 로드 실패. data/mcp_list.json을 확인하세요.</div>';
+  }
+}
+
+function buildFilters(cats) {
+  // 카테고리
+  const cr = document.getElementById('cat-row');
+  const all = document.createElement('button');
+  all.className = 'cat-btn on'; all.textContent = '전체';
+  all.onclick = () => { activeCat = null; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on')); all.classList.add('on'); render(); };
+  cr.appendChild(all);
+  cats.sort().forEach(cat => {
+    const b = document.createElement('button');
+    b.className = 'cat-btn';
+    b.textContent = (CAT_ICON[cat]||'') + ' ' + cat;
+    b.onclick = () => { activeCat = cat; document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on')); b.classList.add('on'); render(); };
+    cr.appendChild(b);
+  });
+
+  // 소스
+  const sr = document.getElementById('src-row');
+  const srcs = [...new Set(DATA.map(d=>d.source))];
+  const sall = document.createElement('button');
+  sall.className = 'src-btn on'; sall.textContent = '# all';
+  sall.onclick = () => { activeSrc = null; document.querySelectorAll('.src-btn').forEach(b=>b.classList.remove('on')); sall.classList.add('on'); render(); };
+  sr.appendChild(sall);
+  srcs.forEach(src => {
+    const b = document.createElement('button');
+    b.className = 'src-btn';
+    b.textContent = '# ' + src;
+    b.onclick = () => { activeSrc = src; document.querySelectorAll('.src-btn').forEach(b=>b.classList.remove('on')); b.classList.add('on'); render(); };
+    sr.appendChild(b);
+  });
+}
+
+function render() {
+  const q    = document.getElementById('search').value.toLowerCase();
+  const sort = document.getElementById('sort').value;
+
+  let list = DATA.filter(d => {
+    if (activeCat && d.cat !== activeCat) return false;
+    if (activeSrc && d.source !== activeSrc) return false;
+    if (q && !d.name.toLowerCase().includes(q) && !d.desc.toLowerCase().includes(q) && !d.cat.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (sort === 'stars') list.sort((a,b) => b.stars - a.stars);
+  else if (sort === 'name') list.sort((a,b) => a.name.localeCompare(b.name, 'ko'));
+  else if (sort === 'source') list.sort((a,b) => a.source.localeCompare(b.source));
+
+  document.getElementById('s-shown').textContent = list.length.toLocaleString();
+
+  const grid = document.getElementById('grid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="empty"><span>🔍</span>검색 결과가 없습니다</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map((d, i) => {
+    const icon     = SERVER_ICON[d.name] || CAT_ICON[d.cat] || '⚙️';
+    const isOff    = d.source === 'awesome-mcp-servers';
+    const srcLabel = d.source === 'awesome-mcp-servers' ? 'awesome' : d.source;
+    return `
+      <a class="card" href="${d.url}" target="_blank" rel="noopener" style="animation-delay:${Math.min(i,20)*0.03}s">
+        <div class="card-head">
+          <div style="display:flex;gap:10px;align-items:center;flex:1;min-width:0">
+            <div class="card-icon">${icon}</div>
+            <div style="min-width:0">
+              <div class="card-title">${d.name}</div>
+              <div class="card-cat">${d.cat}</div>
+            </div>
+          </div>
+          <span class="src-tag ${isOff?'official':''}">${srcLabel}</span>
+        </div>
+        <div class="card-desc">${d.desc}</div>
+        <div class="card-foot">
+          <span class="stars">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            ${fmtStars(d.stars)}
+          </span>
+          <span class="arrow">→</span>
+        </div>
+      </a>
+    `;
+  }).join('');
+}
+
+document.getElementById('search').addEventListener('input', render);
+loadData();
+</script>
+</body>
+</html>
