@@ -546,12 +546,13 @@ let activeSrc = null;
 
 function stripMd(text) {
   return (text || '')
+    .replace(/<[^>]+>/g, ' ')         // HTML 태그 제거
     .replace(/^#+\s*/gm, '')          // # 헤더 제거
     .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1') // **bold** 제거
     .replace(/`([^`]+)`/g, '$1')       // `code` 제거
     .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // [링크](url) 제거
     .replace(/^[-*>\s]+/gm, '')        // - * > 불릿 제거
-    .replace(/\n+/g, ' ')             // 줄바꿈 → 공백으로
+    .replace(/\n+/g, ' ')             // 줄바꿈 → 공백
     .replace(/\s{2,}/g, ' ')          // 연속 공백 제거
     .trim()
     .substring(0, 120);               // 최대 120자
