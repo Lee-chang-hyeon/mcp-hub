@@ -335,6 +335,8 @@ main {
   font-weight: 700;
   color: var(--text);
   line-height: 1.3;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .card-cat {
   font-family: var(--mono);
@@ -358,11 +360,12 @@ main {
   font-size: 13px;
   color: var(--muted);
   line-height: 1.6;
-  flex: 1;
+  flex: none;
+  height: 42px;
+  overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
 
 .card-foot {
@@ -541,6 +544,16 @@ let DATA  = [];
 let activeCat = null;
 let activeSrc = null;
 
+function stripMd(text) {
+  return (text || '')
+    .replace(/^#+\s*/gm, '')
+    .replace(/\*{1,2}([^*]+)\*{1,2}/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+    .replace(/^[-*]\s+/gm, '')
+    .trim();
+}
+
 function fmtStars(n) {
   if (n >= 1000) return (n/1000).toFixed(1).replace(/\.0$/,'') + 'k';
   return String(n);
@@ -659,7 +672,7 @@ function render() {
           </div>
           <span class="src-tag ${isOff?'official':''}">${srcLabel}</span>
         </div>
-        <div class="card-desc">${d.desc}</div>
+        <div class="card-desc">${stripMd(d.desc)}</div>
         <div class="card-foot">
           <span class="stars">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
